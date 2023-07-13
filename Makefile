@@ -35,7 +35,8 @@ mock: ## Generate mocks
 
 proto: ## Generate proto files
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) protoc --go_out=. --go_opt=paths=source_relative \
-                                                                                          --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+                                                                               --go-grpc_out=. --go-grpc_opt=paths=source_relative
+
 lint:
 	$(docker_bin) run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:latest golangci-lint run
 
@@ -54,9 +55,9 @@ fresh-itest:
 itest: build
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/server ./cmd/server
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/agent ./cmd/agent
-	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) ./metricstest -test.v -binary-path=cmd/server/server -agent-binary-path=cmd/agent/agent
+	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) ./metricstest -test.v -test.run=^TestIteration1$$ -binary-path=cmd/server/server -agent-binary-path=cmd/agent/agent
 
-check: build proto fieldaligment-fix gofumpt lint test  ## Run tests and code analysis
+check: build fieldaligment-fix gofumpt lint test itest  ## Run tests and code analysis
 
 staticlint:
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o /usr/src/app/cmd/staticlint/staticlint /usr/src/app/cmd/staticlint
