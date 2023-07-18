@@ -31,11 +31,16 @@ doc: build ## Run local documentation
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -p 8090:8090 $(app_container_name) godoc -http=:8090 -goroot="/usr"
 	## "http://localhost:8090/pkg/?m=all"
 
-mock: ## Generate mocks
+mock: build ## Generate mocks
+	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) mockgen -destination=internal/app/mocks/repository.go -package=mocks github.com/belamov/ypgo-metrics/internal/app/storage Repository
+	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) mockgen -destination=internal/app/mocks/service.go -package=mocks github.com/belamov/ypgo-metrics/internal/app/services MetricServiceInterface
 
 proto: ## Generate proto files
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) protoc --go_out=. --go_opt=paths=source_relative \
-                                                                               --go-grpc_out=. --go-grpc_opt=paths=source_relative
+
+
+shell:
+	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) sh
 
 lint:
 	$(docker_bin) run --rm -v $(shell pwd):/app -w /app golangci/golangci-lint:latest golangci-lint run
@@ -46,7 +51,7 @@ fieldaligment-fix:
 gofumpt:
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) gofumpt -l -w .
 
-test: ## Execute tests
+test: build ## Execute tests
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go test -v -race ./...
 
 fresh-itest:
