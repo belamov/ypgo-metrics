@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -16,14 +17,14 @@ type HttpServer struct {
 	server *http.Server
 }
 
-func NewHttpServer(service services.MetricServiceInterface) (Server, error) {
+func NewHttpServer(addr string, service services.MetricServiceInterface) *HttpServer {
 	return &HttpServer{
 		server: &http.Server{
-			Addr:              "0.0.0.0:8080",
+			Addr:              addr,
 			Handler:           handlers.NewRouter(service),
 			ReadHeaderTimeout: 1 * time.Second,
 		},
-	}, nil
+	}
 }
 
 func (s *HttpServer) Run() {
@@ -34,7 +35,7 @@ func (s *HttpServer) Run() {
 		<-sigint
 		log.Println("Shutting Down Server")
 		// We received an interrupt signal, shut down.
-		if err := s.Shutdown(context.Background()); err != nil {
+		if err := s.shutdown(context.Background()); err != nil {
 			// Error from closing listeners, or context timeout:
 			log.Printf("HTTP server Shutdown: %v", err)
 		}
@@ -43,6 +44,7 @@ func (s *HttpServer) Run() {
 
 	if err := s.server.ListenAndServe(); err != http.ErrServerClosed {
 		// Error starting or closing listener:
+		fmt.Println(err)
 		log.Fatalf("HTTP server ListenAndServe: %v", err)
 	}
 
@@ -50,6 +52,6 @@ func (s *HttpServer) Run() {
 	log.Println("Goodbye")
 }
 
-func (s *HttpServer) Shutdown(ctx context.Context) error {
+func (s *HttpServer) shutdown(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }

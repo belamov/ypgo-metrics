@@ -10,20 +10,22 @@ import (
 type InMemoryRepository struct {
 	gaugeMetrics   map[string]float64
 	counterMetrics map[string]int64
-	mutex          sync.RWMutex
+	gaugeMutex     sync.RWMutex
+	counterMutex   sync.RWMutex
 }
 
 func NewInMemoryRepository() *InMemoryRepository {
 	return &InMemoryRepository{
 		gaugeMetrics:   make(map[string]float64),
 		counterMetrics: make(map[string]int64),
-		mutex:          sync.RWMutex{},
+		gaugeMutex:     sync.RWMutex{},
+		counterMutex:   sync.RWMutex{},
 	}
 }
 
 func (repo *InMemoryRepository) UpdateGaugeMetric(ctx context.Context, metric models.GaugeMetric) error {
-	repo.mutex.Lock()
-	defer repo.mutex.Unlock()
+	repo.gaugeMutex.Lock()
+	defer repo.gaugeMutex.Unlock()
 
 	repo.gaugeMetrics[metric.Name] = metric.Value
 
@@ -31,8 +33,8 @@ func (repo *InMemoryRepository) UpdateGaugeMetric(ctx context.Context, metric mo
 }
 
 func (repo *InMemoryRepository) UpdateCounterMetric(ctx context.Context, metric models.CounterMetric) error {
-	repo.mutex.Lock()
-	defer repo.mutex.Unlock()
+	repo.counterMutex.Lock()
+	defer repo.counterMutex.Unlock()
 
 	repo.counterMetrics[metric.Name] += metric.Value
 

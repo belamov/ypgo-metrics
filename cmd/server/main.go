@@ -10,10 +10,8 @@ func main() {
 	repo := storage.NewInMemoryRepository()
 	metricsService := services.NewMetricService(repo)
 
-	srv, err := server.NewHttpServer(metricsService)
-	if err != nil {
-		panic(err)
-	}
+	serverAddress := "0.0.0.0:8080"
 
+	srv := server.NewHttpServer(serverAddress, metricsService)
 	srv.Run()
 }

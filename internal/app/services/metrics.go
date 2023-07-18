@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/belamov/ypgo-metrics/internal/app/models"
 	"github.com/belamov/ypgo-metrics/internal/app/storage"
@@ -27,7 +28,13 @@ func (service *MetricService) UpdateCounterMetric(ctx context.Context, name stri
 		Name:  name,
 		Value: value,
 	}
-	return service.repo.UpdateCounterMetric(ctx, metric)
+
+	err := service.repo.UpdateCounterMetric(ctx, metric)
+	if err != nil {
+		return fmt.Errorf("cant update metric in storage: %w", err)
+	}
+
+	return nil
 }
 
 func (service *MetricService) UpdateGaugeMetric(ctx context.Context, name string, value float64) error {

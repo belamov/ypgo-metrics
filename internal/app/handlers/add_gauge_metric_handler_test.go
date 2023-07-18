@@ -3,9 +3,10 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"net/http"
+
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
-	"net/http"
 )
 
 func (s *HandlersTestSuite) TestGaugeMetricAdd() {
@@ -88,5 +89,4 @@ func (s *HandlersTestSuite) TestGaugeMetricAddWrongMethod() {
 		nil,
 	)
 	assert.Equal(s.T(), http.StatusMethodNotAllowed, result.StatusCode)
-
 }

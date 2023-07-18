@@ -3,16 +3,17 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"github.com/belamov/ypgo-metrics/internal/app/mocks"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
-	"go.uber.org/mock/gomock"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/belamov/ypgo-metrics/internal/app/mocks"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
+	"go.uber.org/mock/gomock"
 )
 
 type HandlersTestSuite struct {
