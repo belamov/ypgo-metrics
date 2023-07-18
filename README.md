@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/belamov/ypgo-metrics/badge.svg?branch=main)](https://coveralls.io/github/belamov/ypgo-metrics?branch=main)
+
 ## Практические задания на курсе [продвинутый go-разработчик](https://practicum.yandex.ru/go-advanced/)
 
 практика была оформлена в виде инкрементов, каждый инкремент открывался последовательно
