@@ -21,7 +21,6 @@ func TestHTTPServer_Run(t *testing.T) {
 
 	port := chooseRandomUnusedPort()
 	serverAddress := fmt.Sprintf("0.0.0.0:%d", port)
-	fmt.Println(serverAddress)
 	server := NewHTTPServer(serverAddress, mockService)
 
 	done := make(chan struct{})

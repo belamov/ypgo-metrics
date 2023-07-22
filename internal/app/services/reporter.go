@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/belamov/ypgo-metrics/internal/app/models"
 )
 
@@ -32,13 +34,12 @@ func (r *HTTPReporter) Report(metrics []models.MetricForReport) {
 			nil,
 		)
 		if err != nil {
-			fmt.Println(fmt.Errorf("update metric error: %w", err))
-			_ = response.Body.Close()
+			log.Error().Err(err).Msg("update metric error")
 			continue
 		}
 
 		if response.StatusCode != http.StatusOK {
-			fmt.Println(fmt.Errorf("unexpected update response: %v", response))
+			log.Error().Any("response", response).Msg("unexpected update response")
 		}
 		_ = response.Body.Close()
 	}

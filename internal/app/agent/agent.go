@@ -1,10 +1,11 @@
 package agent
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/belamov/ypgo-metrics/internal/app/services"
 )
@@ -35,11 +36,11 @@ func (a *Agent) Run() {
 	signal.Notify(sigint, os.Interrupt)
 
 	go func() {
-		fmt.Println("Agent Started")
+		log.Info().Msg("Agent started")
 		for {
 			select {
 			case <-sigint:
-				fmt.Println("Stopping Agent")
+				log.Info().Msg("Stopping Agent")
 				a.shutdown()
 				return
 			case <-a.pollTicker.C:
@@ -56,5 +57,5 @@ func (a *Agent) Run() {
 func (a *Agent) shutdown() {
 	a.pollTicker.Stop()
 	a.reportTicker.Stop()
-	fmt.Println("Agent Stopped")
+	log.Info().Msg("Agent Stopped")
 }

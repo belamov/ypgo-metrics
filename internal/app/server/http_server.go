@@ -2,12 +2,12 @@ package server
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/belamov/ypgo-metrics/internal/app/handlers"
 	"github.com/belamov/ypgo-metrics/internal/app/services"
@@ -33,23 +33,22 @@ func (s *HTTPServer) Run() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
-		log.Println("Shutting Down Server")
+		log.Info().Msg("Shutting Down Server")
 		// We received an interrupt signal, shut down.
 		if err := s.shutdown(context.Background()); err != nil {
 			// Error from closing listeners, or context timeout:
-			log.Printf("HTTP server Shutdown: %v", err)
+			log.Error().Err(err).Msg("HTTP server Shutdown: ")
 		}
 		close(idleConnsClosed)
 	}()
 
 	if err := s.server.ListenAndServe(); err != http.ErrServerClosed {
 		// Error starting or closing listener:
-		fmt.Println(err)
-		log.Fatalf("HTTP server ListenAndServe: %v", err)
+		log.Fatal().Err(err).Msg("HTTP server ListenAndServe:")
 	}
 
 	<-idleConnsClosed
-	log.Println("Goodbye")
+	log.Info().Msg("Goodbye")
 }
 
 func (s *HTTPServer) shutdown(ctx context.Context) error {
