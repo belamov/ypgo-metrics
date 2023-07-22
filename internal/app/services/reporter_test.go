@@ -18,13 +18,13 @@ func (t *recordingTransport) RoundTrip(req *http.Request) (resp *http.Response, 
 	return &http.Response{StatusCode: http.StatusOK}, nil
 }
 
-func TestHttpReporter_Report(t *testing.T) {
+func TestHTTPReporter_Report(t *testing.T) {
 	tr := recordingTransport{}
 
 	client := &http.Client{Transport: &tr}
-	updateUrl := "update_url"
+	updateURL := "update_url"
 
-	reporter := NewHttpReporter(client, updateUrl)
+	reporter := NewHTTPReporter(client, updateURL)
 
 	metrics := []models.MetricForReport{{
 		Type:  "type",
@@ -35,7 +35,7 @@ func TestHttpReporter_Report(t *testing.T) {
 	reporter.Report(metrics)
 
 	assert.Equal(t,
-		fmt.Sprintf("%s/%s/%s/%s", updateUrl, metrics[0].Type, metrics[0].Name, metrics[0].Value),
+		fmt.Sprintf("%s/%s/%s/%s", updateURL, metrics[0].Type, metrics[0].Name, metrics[0].Value),
 		tr.req.URL.String(),
 	)
 }

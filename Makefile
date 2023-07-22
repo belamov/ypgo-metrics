@@ -54,16 +54,15 @@ gofumpt:
 test: build ## Execute tests
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go test -v -race ./...
 
-itest: build
+itest:
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/server ./cmd/server
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/agent ./cmd/agent
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) ./metricstest -test.v -test.run=^TestIteration[12][AB]*$$ -binary-path=cmd/server/server -agent-binary-path=cmd/agent/agent  -source-path=.
 
-check: build fieldaligment-fix gofumpt lint test itest  ## Run tests and code analysis
+istatictest:
+	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go vet -vettool=statictest ./...
 
-staticlint:
-	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o /usr/src/app/cmd/staticlint/staticlint /usr/src/app/cmd/staticlint
-	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) /usr/src/app/cmd/staticlint/staticlint ./...
+check: build fieldaligment-fix gofumpt lint test itest istatictest  ## Run tests and code analysis
 
 # Prompt to continue
 prompt-continue:

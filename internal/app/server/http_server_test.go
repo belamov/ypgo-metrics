@@ -15,14 +15,14 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestHttpServer_Run(t *testing.T) {
+func TestHTTPServer_Run(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mockService := mocks.NewMockMetricServiceInterface(ctrl)
 
 	port := chooseRandomUnusedPort()
 	serverAddress := fmt.Sprintf("0.0.0.0:%d", port)
 	fmt.Println(serverAddress)
-	server := NewHttpServer(serverAddress, mockService)
+	server := NewHTTPServer(serverAddress, mockService)
 
 	done := make(chan struct{})
 	go func() {
@@ -45,6 +45,8 @@ func TestHttpServer_Run(t *testing.T) {
 
 	waitForHTTPServerStart(port)
 	resp, err := http.Get(fmt.Sprintf("http://localhost:%d/", port))
+	_ = resp.Body.Close()
+
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 }

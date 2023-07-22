@@ -12,6 +12,6 @@ func main() {
 
 	serverAddress := "0.0.0.0:8080"
 
-	srv := server.NewHttpServer(serverAddress, metricsService)
+	srv := server.NewHTTPServer(serverAddress, metricsService)
 	srv.Run()
 }

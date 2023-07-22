@@ -54,6 +54,7 @@ func (s *HandlersTestSuite) TestUnknownRoute() {
 		"",
 		nil,
 	)
+	_ = result.Body.Close()
 
 	assert.Equal(s.T(), http.StatusBadRequest, result.StatusCode)
 }
@@ -87,7 +88,9 @@ func (s *HandlersTestSuite) testRequest(method, path string, body string, cookie
 	require.NoError(s.T(), err)
 
 	respBody, err = io.ReadAll(resp.Body)
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 
 	require.NoError(s.T(), err)
 

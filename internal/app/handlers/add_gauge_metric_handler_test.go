@@ -21,6 +21,7 @@ func (s *HandlersTestSuite) TestGaugeMetricAdd() {
 		"",
 		nil,
 	)
+	_ = result.Body.Close()
 
 	assert.Equal(s.T(), http.StatusOK, result.StatusCode)
 }
@@ -39,6 +40,7 @@ func (s *HandlersTestSuite) TestGaugeMetricAddServiceError() {
 		"",
 		nil,
 	)
+	_ = result.Body.Close()
 
 	assert.Equal(s.T(), http.StatusInternalServerError, result.StatusCode)
 }
@@ -53,6 +55,7 @@ func (s *HandlersTestSuite) TestGaugeMetricAddNotFloat() {
 		"",
 		nil,
 	)
+	_ = result.Body.Close()
 
 	assert.Equal(s.T(), http.StatusBadRequest, result.StatusCode)
 }
@@ -66,6 +69,7 @@ func (s *HandlersTestSuite) TestGaugeMetricWrongFormat() {
 		"",
 		nil,
 	)
+	_ = result.Body.Close()
 
 	assert.Equal(s.T(), http.StatusNotFound, result.StatusCode)
 }
@@ -80,6 +84,7 @@ func (s *HandlersTestSuite) TestGaugeMetricAddWrongMethod() {
 		"",
 		nil,
 	)
+	_ = result.Body.Close()
 	assert.Equal(s.T(), http.StatusMethodNotAllowed, result.StatusCode)
 
 	result, _ = s.testRequest(
@@ -88,5 +93,6 @@ func (s *HandlersTestSuite) TestGaugeMetricAddWrongMethod() {
 		"",
 		nil,
 	)
+	_ = result.Body.Close()
 	assert.Equal(s.T(), http.StatusMethodNotAllowed, result.StatusCode)
 }

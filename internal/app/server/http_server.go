@@ -13,12 +13,12 @@ import (
 	"github.com/belamov/ypgo-metrics/internal/app/services"
 )
 
-type HttpServer struct {
+type HTTPServer struct {
 	server *http.Server
 }
 
-func NewHttpServer(addr string, service services.MetricServiceInterface) *HttpServer {
-	return &HttpServer{
+func NewHTTPServer(addr string, service services.MetricServiceInterface) *HTTPServer {
+	return &HTTPServer{
 		server: &http.Server{
 			Addr:              addr,
 			Handler:           handlers.NewRouter(service),
@@ -27,7 +27,7 @@ func NewHttpServer(addr string, service services.MetricServiceInterface) *HttpSe
 	}
 }
 
-func (s *HttpServer) Run() {
+func (s *HTTPServer) Run() {
 	idleConnsClosed := make(chan struct{})
 	go func() {
 		sigint := make(chan os.Signal, 1)
@@ -52,6 +52,6 @@ func (s *HttpServer) Run() {
 	log.Println("Goodbye")
 }
 
-func (s *HttpServer) shutdown(ctx context.Context) error {
+func (s *HTTPServer) shutdown(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
 }

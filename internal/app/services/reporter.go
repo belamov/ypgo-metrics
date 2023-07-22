@@ -11,33 +11,35 @@ type ReporterInterface interface {
 	Report([]models.MetricForReport)
 }
 
-type HttpReporter struct {
+type HTTPReporter struct {
 	client    *http.Client
-	updateUrl string
+	updateURL string
 }
 
-func NewHttpReporter(client *http.Client, updateUrl string) *HttpReporter {
-	return &HttpReporter{
+func NewHTTPReporter(client *http.Client, updateURL string) *HTTPReporter {
+	return &HTTPReporter{
 		client:    client,
-		updateUrl: updateUrl,
+		updateURL: updateURL,
 	}
 }
 
-func (r *HttpReporter) Report(metrics []models.MetricForReport) {
+func (r *HTTPReporter) Report(metrics []models.MetricForReport) {
 	for _, metric := range metrics {
 		// TODO: client throttle
 		response, err := r.client.Post(
-			fmt.Sprintf("%s/%s/%s/%s", r.updateUrl, metric.Type, metric.Name, metric.Value),
+			fmt.Sprintf("%s/%s/%s/%s", r.updateURL, metric.Type, metric.Name, metric.Value),
 			"text/plain",
 			nil,
 		)
 		if err != nil {
 			fmt.Println(fmt.Errorf("update metric error: %w", err))
+			_ = response.Body.Close()
 			continue
 		}
 
 		if response.StatusCode != http.StatusOK {
 			fmt.Println(fmt.Errorf("unexpected update response: %v", response))
 		}
+		_ = response.Body.Close()
 	}
 }
