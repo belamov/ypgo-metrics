@@ -54,13 +54,10 @@ gofumpt:
 test: build ## Execute tests
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go test -v -race ./...
 
-fresh-itest:
-	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) curl -s https://api.github.com/repos/Yandex-Practicum/go-autotests/releases/latest | grep 'http.\+metricstest"' | cut -d : -f 2,3 | tr -d \" | wget -v --show-progress -O metricstest && chmod +x ./metricstest
-
 itest: build
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/server ./cmd/server
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/agent ./cmd/agent
-	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) ./metricstest -test.v -test.run=^TestIteration1$$ -binary-path=cmd/server/server -agent-binary-path=cmd/agent/agent
+	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) ./metricstest -test.v -test.run=^TestIteration[12][AB]*$$ -binary-path=cmd/server/server -agent-binary-path=cmd/agent/agent  -source-path=.
 
 check: build fieldaligment-fix gofumpt lint test itest  ## Run tests and code analysis
 
