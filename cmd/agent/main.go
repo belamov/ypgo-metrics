@@ -19,7 +19,10 @@ func main() {
 	reportInterval := 10 * time.Second
 
 	poller := services.NewPoller()
-	reporter := services.NewHTTPReporter(http.DefaultClient, "http://localhost:8080/update")
+	httpClient := &http.Client{
+		Timeout: reportInterval / 2,
+	}
+	reporter := services.NewHTTPReporter(httpClient, "http://localhost:8080/update")
 
 	a := agent.NewAgent(
 		pollInterval,

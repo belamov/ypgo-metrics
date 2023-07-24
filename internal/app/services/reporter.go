@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/rs/zerolog/log"
@@ -33,6 +34,13 @@ func (r *HTTPReporter) Report(metrics []models.MetricForReport) {
 			"text/plain",
 			nil,
 		)
+
+		// for immediate tcp connection reuse
+		if response != nil {
+			_, _ = io.Copy(io.Discard, response.Body)
+			_ = response.Body.Close()
+		}
+
 		if err != nil {
 			log.Error().Err(err).Msg("update metric error")
 			continue
@@ -41,6 +49,5 @@ func (r *HTTPReporter) Report(metrics []models.MetricForReport) {
 		if response.StatusCode != http.StatusOK {
 			log.Error().Any("response", response).Msg("unexpected update response")
 		}
-		_ = response.Body.Close()
 	}
 }
