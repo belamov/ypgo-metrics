@@ -34,6 +34,36 @@ func (m *MockMetricServiceInterface) EXPECT() *MockMetricServiceInterfaceMockRec
 	return m.recorder
 }
 
+// GetCounterMetric mocks base method.
+func (m *MockMetricServiceInterface) GetCounterMetric(arg0 context.Context, arg1 string) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCounterMetric", arg0, arg1)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCounterMetric indicates an expected call of GetCounterMetric.
+func (mr *MockMetricServiceInterfaceMockRecorder) GetCounterMetric(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCounterMetric", reflect.TypeOf((*MockMetricServiceInterface)(nil).GetCounterMetric), arg0, arg1)
+}
+
+// GetGaugeMetric mocks base method.
+func (m *MockMetricServiceInterface) GetGaugeMetric(arg0 context.Context, arg1 string) (float64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGaugeMetric", arg0, arg1)
+	ret0, _ := ret[0].(float64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGaugeMetric indicates an expected call of GetGaugeMetric.
+func (mr *MockMetricServiceInterfaceMockRecorder) GetGaugeMetric(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGaugeMetric", reflect.TypeOf((*MockMetricServiceInterface)(nil).GetGaugeMetric), arg0, arg1)
+}
+
 // UpdateCounterMetric mocks base method.
 func (m *MockMetricServiceInterface) UpdateCounterMetric(arg0 context.Context, arg1 string, arg2 int64) error {
 	m.ctrl.T.Helper()

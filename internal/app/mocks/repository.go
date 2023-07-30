@@ -35,6 +35,36 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
+// GetCounterMetricByName mocks base method.
+func (m *MockRepository) GetCounterMetricByName(arg0 context.Context, arg1 string) (*models.CounterMetric, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCounterMetricByName", arg0, arg1)
+	ret0, _ := ret[0].(*models.CounterMetric)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCounterMetricByName indicates an expected call of GetCounterMetricByName.
+func (mr *MockRepositoryMockRecorder) GetCounterMetricByName(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCounterMetricByName", reflect.TypeOf((*MockRepository)(nil).GetCounterMetricByName), arg0, arg1)
+}
+
+// GetGaugeMetricByName mocks base method.
+func (m *MockRepository) GetGaugeMetricByName(arg0 context.Context, arg1 string) (*models.GaugeMetric, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGaugeMetricByName", arg0, arg1)
+	ret0, _ := ret[0].(*models.GaugeMetric)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGaugeMetricByName indicates an expected call of GetGaugeMetricByName.
+func (mr *MockRepositoryMockRecorder) GetGaugeMetricByName(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGaugeMetricByName", reflect.TypeOf((*MockRepository)(nil).GetGaugeMetricByName), arg0, arg1)
+}
+
 // UpdateCounterMetric mocks base method.
 func (m *MockRepository) UpdateCounterMetric(arg0 context.Context, arg1 models.CounterMetric) error {
 	m.ctrl.T.Helper()

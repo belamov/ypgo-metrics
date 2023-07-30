@@ -23,6 +23,30 @@ func NewInMemoryRepository() *InMemoryRepository {
 	}
 }
 
+func (repo *InMemoryRepository) GetGaugeMetricByName(ctx context.Context, name string) (*models.GaugeMetric, error) {
+	metric, ok := repo.gaugeMetrics[name]
+	if !ok {
+		return nil, ErrMetricNotFound
+	}
+
+	return &models.GaugeMetric{
+		Name:  name,
+		Value: metric,
+	}, nil
+}
+
+func (repo *InMemoryRepository) GetCounterMetricByName(ctx context.Context, name string) (*models.CounterMetric, error) {
+	metric, ok := repo.counterMetrics[name]
+	if !ok {
+		return nil, ErrMetricNotFound
+	}
+
+	return &models.CounterMetric{
+		Name:  name,
+		Value: metric,
+	}, nil
+}
+
 func (repo *InMemoryRepository) UpdateGaugeMetric(ctx context.Context, metric models.GaugeMetric) error {
 	repo.gaugeMutex.Lock()
 	defer repo.gaugeMutex.Unlock()

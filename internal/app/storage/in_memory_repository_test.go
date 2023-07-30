@@ -57,6 +57,52 @@ func TestInMemoryRepository_UpdateCounterMetric(t *testing.T) {
 	assert.Equal(t, metric.Value, repo.counterMetrics[metric.Name])
 }
 
+func TestInMemoryRepository_GetCounterMetric(t *testing.T) {
+	repo := NewInMemoryRepository()
+
+	metricName := "metricName"
+	metricValue := int64(1)
+	repo.counterMetrics[metricName] = metricValue
+	metric, err := repo.GetCounterMetricByName(context.Background(), metricName)
+
+	assert.NoError(t, err)
+	assert.Equal(t, metricValue, metric.Value)
+	assert.Equal(t, metricName, metric.Name)
+}
+
+func TestInMemoryRepository_GetGaugeMetric(t *testing.T) {
+	repo := NewInMemoryRepository()
+
+	metricName := "metricName"
+	metricValue := float64(1)
+	repo.gaugeMetrics[metricName] = metricValue
+	metric, err := repo.GetGaugeMetricByName(context.Background(), metricName)
+
+	assert.NoError(t, err)
+	assert.Equal(t, metricValue, metric.Value)
+	assert.Equal(t, metricName, metric.Name)
+}
+
+func TestInMemoryRepository_GetUnexistingCounterMetric(t *testing.T) {
+	repo := NewInMemoryRepository()
+
+	metricName := "metricName"
+	metric, err := repo.GetCounterMetricByName(context.Background(), metricName)
+
+	assert.ErrorIs(t, err, ErrMetricNotFound)
+	assert.Nil(t, metric)
+}
+
+func TestInMemoryRepository_GetUnexistingGaugeMetric(t *testing.T) {
+	repo := NewInMemoryRepository()
+
+	metricName := "metricName"
+	metric, err := repo.GetGaugeMetricByName(context.Background(), metricName)
+
+	assert.ErrorIs(t, err, ErrMetricNotFound)
+	assert.Nil(t, metric)
+}
+
 func TestInMemoryRepository_UpdateCounterMetricParallel(t *testing.T) {
 	repo := NewInMemoryRepository()
 
