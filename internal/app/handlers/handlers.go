@@ -3,6 +3,9 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/belamov/ypgo-metrics/internal/app/services"
 )
 
@@ -19,12 +22,12 @@ func NewHandler(service services.MetricServiceInterface) *Handler {
 func NewRouter(service services.MetricServiceInterface) http.Handler {
 	h := NewHandler(service)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/update/gauge/", h.AddGaugeMetric)
-	mux.HandleFunc("/update/counter/", h.AddCounterMetric)
-	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		writer.WriteHeader(http.StatusBadRequest)
-	})
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.Heartbeat("/ping"))
 
-	return mux
+	r.Post("/update/{metricType}/{metricName}/{metricValue}", h.UpdateMetric)
+
+	return r
 }

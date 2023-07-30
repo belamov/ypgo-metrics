@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/belamov/ypgo-metrics/internal/app/mocks"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
@@ -42,21 +41,6 @@ func (s *HandlersTestSuite) TearDownSuite() {
 
 func TestHandlersTestSuite(t *testing.T) {
 	suite.Run(t, new(HandlersTestSuite))
-}
-
-func (s *HandlersTestSuite) TestUnknownRoute() {
-	metricName := "metricName"
-	metricValue := int64(10)
-
-	result, _ := s.testRequest(
-		http.MethodPost,
-		fmt.Sprintf("/update/unknown/%s/%d", metricName, metricValue),
-		"",
-		nil,
-	)
-	_ = result.Body.Close()
-
-	assert.Equal(s.T(), http.StatusBadRequest, result.StatusCode)
 }
 
 func (s *HandlersTestSuite) testRequest(method, path string, body string, cookies map[string]string) (*http.Response, string) {

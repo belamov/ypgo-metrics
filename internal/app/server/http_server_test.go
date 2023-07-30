@@ -43,11 +43,11 @@ func TestHTTPServer_Run(t *testing.T) {
 	}()
 
 	waitForHTTPServerStart(port)
-	resp, err := http.Get(fmt.Sprintf("http://localhost:%d/", port))
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%d/ping", port))
 	_ = resp.Body.Close()
 
 	require.NoError(t, err)
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
 
 func chooseRandomUnusedPort() (port int) {
