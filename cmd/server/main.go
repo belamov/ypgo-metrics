@@ -16,8 +16,8 @@ func main() {
 	repo := storage.NewInMemoryRepository()
 	metricsService := services.NewMetricService(repo)
 
-	serverAddress := "0.0.0.0:8080"
+	config := services.BuildServerConfig()
 
-	srv := server.NewHTTPServer(serverAddress, metricsService)
+	srv := server.NewHTTPServer(config.Address, metricsService)
 	srv.Run()
 }

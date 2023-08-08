@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -15,18 +15,20 @@ import (
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}).With().Caller().Logger()
 
-	pollInterval := 2 * time.Second
-	reportInterval := 10 * time.Second
+	config := services.BuildClientConfig()
 
 	poller := services.NewPoller()
 	httpClient := &http.Client{
-		Timeout: reportInterval / 2,
+		Timeout: config.ReportInterval / 2,
 	}
-	reporter := services.NewHTTPReporter(httpClient, "http://localhost:8080/update")
+	reporter := services.NewHTTPReporter(
+		httpClient,
+		fmt.Sprintf("http://%s/update", config.ServerAddress),
+	)
 
 	a := agent.NewAgent(
-		pollInterval,
-		reportInterval,
+		config.PollInterval,
+		config.ReportInterval,
 		poller,
 		reporter,
 	)
