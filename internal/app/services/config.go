@@ -2,6 +2,9 @@ package services
 
 import (
 	"flag"
+	"fmt"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -10,11 +13,15 @@ type ServerConfig struct {
 }
 
 func BuildServerConfig() *ServerConfig {
-	cfg := &ServerConfig{}
+	var addressFlag string
 
-	flag.StringVar(&cfg.Address, "a", "0.0.0.0:8080", "server address")
+	flag.StringVar(&addressFlag, "a", "0.0.0.0:8080", "server address")
 
 	flag.Parse()
+
+	cfg := &ServerConfig{
+		Address: coalesceStrings(os.Getenv("ADDRESS"), addressFlag),
+	}
 
 	return cfg
 }
@@ -26,18 +33,50 @@ type ClientConfig struct {
 }
 
 func BuildClientConfig() *ClientConfig {
-	cfg := &ClientConfig{}
-	var pollIntervalSeconds uint64
-	var reportIntervalSeconds uint64
+	var serverAddressFlag string
+	var pollIntervalFlag uint64
+	var reportIntervalFlag uint64
 
-	flag.StringVar(&cfg.ServerAddress, "a", "localhost:8080", "server address")
-	flag.Uint64Var(&reportIntervalSeconds, "r", 10, "report interval in seconds")
-	flag.Uint64Var(&pollIntervalSeconds, "p", 2, "poll interval in seconds")
+	flag.StringVar(&serverAddressFlag, "a", "localhost:8080", "server address")
+	flag.Uint64Var(&reportIntervalFlag, "r", 10, "report interval in seconds")
+	flag.Uint64Var(&pollIntervalFlag, "p", 2, "poll interval in seconds")
 
 	flag.Parse()
 
-	cfg.ReportInterval = time.Duration(reportIntervalSeconds) * time.Second
-	cfg.PollInterval = time.Duration(pollIntervalSeconds) * time.Second
+	reportIntervalSeconds := coalesceUints(uintFromEnv("REPORT_INTERVAL"), reportIntervalFlag)
+	pollIntervalSeconds := coalesceUints(uintFromEnv("POLL_INTERVAL"), pollIntervalFlag)
+	cfg := &ClientConfig{
+		ServerAddress:  coalesceStrings(os.Getenv("ADDRESS"), serverAddressFlag),
+		ReportInterval: time.Duration(reportIntervalSeconds) * time.Second,
+		PollInterval:   time.Duration(pollIntervalSeconds) * time.Second,
+	}
 
 	return cfg
+}
+
+func uintFromEnv(key string) uint64 {
+	s := os.Getenv(key)
+	v, err := strconv.ParseUint(s, 10, 64)
+	if err != nil && s != "" {
+		panic(fmt.Sprintf("invalid env value: %s. %s", s, err))
+	}
+	return v
+}
+
+func coalesceStrings(strings ...string) string {
+	for _, str := range strings {
+		if str != "" {
+			return str
+		}
+	}
+	return ""
+}
+
+func coalesceUints(uints ...uint64) uint64 {
+	for _, v := range uints {
+		if v != 0 {
+			return v
+		}
+	}
+	return 0
 }

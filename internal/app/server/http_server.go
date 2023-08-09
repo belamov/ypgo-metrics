@@ -41,11 +41,12 @@ func (s *HTTPServer) Run() {
 		}
 		close(idleConnsClosed)
 	}()
-
+	log.Info().Msg("Starting server")
 	if err := s.server.ListenAndServe(); err != http.ErrServerClosed {
 		// Error starting or closing listener:
 		log.Fatal().Err(err).Msg("HTTP server ListenAndServe:")
 	}
+	log.Info().Msgf("Server started on %s", s.server.Addr)
 
 	<-idleConnsClosed
 	log.Info().Msg("Goodbye")
