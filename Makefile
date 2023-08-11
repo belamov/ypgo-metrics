@@ -55,9 +55,10 @@ test: build ## Execute tests
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go test -v -race ./...
 
 itest:
+	## download metrictest binary from latest release https://github.com/Yandex-Practicum/go-autotests/releases/ first
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/server ./cmd/server
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go build -v -o ./cmd/agent ./cmd/agent
-	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) ./metricstest -test.v -test.run=^TestIteration[12345][ABCDEFGHIGKLMNOPQRSTUVW]*$$ -binary-path=cmd/server/server -agent-binary-path=cmd/agent/agent  -source-path=. -server-port=8088
+	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm -it $(app_container_name) ./metricstest -test.v -test.run=^TestIteration[123456][ABCDEFGHIGKLMNOPQRSTUVW]*$$ -binary-path=cmd/server/server -agent-binary-path=cmd/agent/agent  -source-path=. -server-port=8088
 
 istatictest:
 	$(docker_compose_bin) --file "$(docker_compose_yml)" run --rm $(app_container_name) go vet -vettool=statictest ./...

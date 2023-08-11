@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 
+	"github.com/belamov/ypgo-metrics/internal/app"
+
 	"github.com/belamov/ypgo-metrics/internal/app/server"
 	"github.com/belamov/ypgo-metrics/internal/app/services"
 	"github.com/belamov/ypgo-metrics/internal/app/storage"
@@ -16,7 +18,7 @@ func main() {
 	repo := storage.NewInMemoryRepository()
 	metricsService := services.NewMetricService(repo)
 
-	config := services.BuildServerConfig()
+	config := app.BuildServerConfig()
 
 	srv := server.NewHTTPServer(config.Address, metricsService)
 	srv.Run()

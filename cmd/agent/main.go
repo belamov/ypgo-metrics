@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/belamov/ypgo-metrics/internal/app"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -15,7 +17,7 @@ import (
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}).With().Caller().Logger()
 
-	config := services.BuildClientConfig()
+	config := app.BuildClientConfig()
 
 	poller := services.NewPoller()
 	httpClient := &http.Client{
