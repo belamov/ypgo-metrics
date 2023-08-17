@@ -25,7 +25,7 @@ func main() {
 	}
 	reporter := services.NewHTTPReporter(
 		httpClient,
-		fmt.Sprintf("http://%s/update", config.ServerAddress),
+		fmt.Sprintf("http://%s/update/", config.ServerAddress),
 	)
 
 	a := agent.NewAgent(

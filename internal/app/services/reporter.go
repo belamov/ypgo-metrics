@@ -1,17 +1,18 @@
 package services
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 
-	"github.com/rs/zerolog/log"
+	"github.com/belamov/ypgo-metrics/internal/app/resources"
 
-	"github.com/belamov/ypgo-metrics/internal/app/models"
+	"github.com/rs/zerolog/log"
 )
 
 type ReporterInterface interface {
-	Report([]models.MetricForReport)
+	Report([]resources.Metric)
 }
 
 type HTTPReporter struct {
@@ -26,13 +27,18 @@ func NewHTTPReporter(client *http.Client, updateURL string) *HTTPReporter {
 	}
 }
 
-func (r *HTTPReporter) Report(metrics []models.MetricForReport) {
+func (r *HTTPReporter) Report(metrics []resources.Metric) {
 	for _, metric := range metrics {
 		// TODO: client throttle
+		body, err := json.Marshal(metric)
+		if err != nil {
+			log.Error().Err(err).Msg("error marshalling metric for report")
+			continue
+		}
 		response, err := r.client.Post(
-			fmt.Sprintf("%s/%s/%s/%s", r.updateURL, metric.Type, metric.Name, metric.Value),
-			"text/plain",
-			nil,
+			r.updateURL,
+			"application/json",
+			bytes.NewReader(body),
 		)
 
 		// for immediate tcp connection reuse

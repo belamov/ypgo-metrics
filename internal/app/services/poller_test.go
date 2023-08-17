@@ -11,9 +11,9 @@ func TestPoller_Poll(t *testing.T) {
 	poller := NewPoller()
 
 	poller.Poll()
-	assert.Equal(t, uint64(1), poller.pollCount)
+	assert.Equal(t, int64(1), poller.pollCount)
 	poller.Poll()
-	assert.Equal(t, uint64(2), poller.pollCount)
+	assert.Equal(t, int64(2), poller.pollCount)
 }
 
 func TestPoller_GetMetricsToReport(t *testing.T) {
@@ -60,11 +60,11 @@ func TestPoller_GetMetricsToReport(t *testing.T) {
 	foundGaugeMetrics := make([]string, 0, len(expectedGaugeMetrics))
 	foundCounterMetrics := make([]string, 0)
 	for _, metric := range metrics {
-		if metric.Type == "gauge" {
-			foundGaugeMetrics = append(foundGaugeMetrics, metric.Name)
+		if metric.MType == "gauge" {
+			foundGaugeMetrics = append(foundGaugeMetrics, metric.ID)
 		}
-		if metric.Type == "counter" {
-			foundCounterMetrics = append(foundCounterMetrics, metric.Name)
+		if metric.MType == "counter" {
+			foundCounterMetrics = append(foundCounterMetrics, metric.ID)
 		}
 	}
 

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 	"strconv"
 
@@ -18,16 +17,16 @@ func (h *Handler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 
 	switch metricType {
 	case TypeCounter:
-		h.updateCounterMetric(r.Context(), w, r)
+		h.updateCounterMetric(w, r)
 	case TypeGauge:
-		h.updateGaugeMetric(r.Context(), w, r)
+		h.updateGaugeMetric(w, r)
 	default:
 		http.Error(w, "unknown metric type", http.StatusBadRequest)
 		return
 	}
 }
 
-func (h *Handler) updateGaugeMetric(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+func (h *Handler) updateGaugeMetric(w http.ResponseWriter, r *http.Request) {
 	metricName := chi.URLParam(r, "metricName")
 	metricValue, err := strconv.ParseFloat(chi.URLParam(r, "metricValue"), 64)
 	if err != nil {
@@ -35,7 +34,7 @@ func (h *Handler) updateGaugeMetric(ctx context.Context, w http.ResponseWriter, 
 		return
 	}
 
-	err = h.metricsService.UpdateGaugeMetric(ctx, metricName, metricValue)
+	err = h.metricsService.UpdateGaugeMetric(r.Context(), metricName, metricValue)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -44,7 +43,7 @@ func (h *Handler) updateGaugeMetric(ctx context.Context, w http.ResponseWriter, 
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) updateCounterMetric(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+func (h *Handler) updateCounterMetric(w http.ResponseWriter, r *http.Request) {
 	metricName := chi.URLParam(r, "metricName")
 	metricValue, err := strconv.ParseInt(chi.URLParam(r, "metricValue"), 10, 64)
 	if err != nil {
@@ -52,7 +51,7 @@ func (h *Handler) updateCounterMetric(ctx context.Context, w http.ResponseWriter
 		return
 	}
 
-	err = h.metricsService.UpdateCounterMetric(ctx, metricName, metricValue)
+	err = h.metricsService.UpdateCounterMetric(r.Context(), metricName, metricValue)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -3,19 +3,18 @@ package services
 import (
 	"math/rand"
 	"runtime"
-	"strconv"
 
-	"github.com/belamov/ypgo-metrics/internal/app/models"
+	"github.com/belamov/ypgo-metrics/internal/app/resources"
 )
 
 type PollerInterface interface {
 	Poll()
-	GetMetricsToReport() []models.MetricForReport
+	GetMetricsToReport() []resources.Metric
 }
 
 type Poller struct {
 	ms          *runtime.MemStats
-	pollCount   uint64
+	pollCount   int64
 	randomValue uint64
 }
 
@@ -31,8 +30,8 @@ func (p *Poller) Poll() {
 	p.randomValue = rand.Uint64()
 }
 
-func (p *Poller) GetMetricsToReport() []models.MetricForReport {
-	metrics := make([]models.MetricForReport, 29)
+func (p *Poller) GetMetricsToReport() []resources.Metric {
+	metrics := make([]resources.Metric, 29)
 	metrics[0] = uintGaugeMetric("Alloc", p.ms.Alloc)
 	metrics[1] = uintGaugeMetric("BuckHashSys", p.ms.BuckHashSys)
 	metrics[2] = uintGaugeMetric("Frees", p.ms.Frees)
@@ -61,31 +60,28 @@ func (p *Poller) GetMetricsToReport() []models.MetricForReport {
 	metrics[25] = uintGaugeMetric("TotalAlloc", p.ms.TotalAlloc)
 	metrics[26] = floatGaugeMetric("GCCPUFraction", p.ms.GCCPUFraction)
 	metrics[27] = uintGaugeMetric("RandomValue", p.randomValue)
-	metrics[28] = counterMetric(p.pollCount)
+	metrics[28] = counterMetric("PollCount", p.pollCount)
 
 	return metrics
 }
 
-func uintGaugeMetric(name string, value uint64) models.MetricForReport {
-	return models.MetricForReport{
-		Type:  "gauge",
-		Name:  name,
-		Value: strconv.FormatUint(value, 10),
+func uintGaugeMetric(name string, value uint64) resources.Metric {
+	val := float64(value)
+	return floatGaugeMetric(name, val)
+}
+
+func floatGaugeMetric(name string, value float64) resources.Metric {
+	return resources.Metric{
+		MType: "gauge",
+		ID:    name,
+		Value: &value,
 	}
 }
 
-func floatGaugeMetric(name string, value float64) models.MetricForReport {
-	return models.MetricForReport{
-		Type:  "gauge",
-		Name:  name,
-		Value: strconv.FormatFloat(value, 'e', -1, 64),
-	}
-}
-
-func counterMetric(value uint64) models.MetricForReport {
-	return models.MetricForReport{
-		Type:  "counter",
-		Name:  "PollCount",
-		Value: strconv.FormatUint(value, 10),
+func counterMetric(name string, value int64) resources.Metric {
+	return resources.Metric{
+		MType: "counter",
+		ID:    name,
+		Delta: &value,
 	}
 }

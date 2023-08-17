@@ -27,8 +27,10 @@ func NewRouter(service services.MetricServiceInterface) http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Heartbeat("/ping"))
 
-	r.Post("/update/{metricType}/{metricName}/{metricValue}", h.UpdateMetric)
+	r.Post("/value/", h.GetMetricJSON)
+	r.Post("/update/", h.UpdateMetricJSON)
 	r.Get("/value/{metricType}/{metricName}", h.GetMetric)
+	r.Post("/update/{metricType}/{metricName}/{metricValue}", h.UpdateMetric)
 
 	return r
 }

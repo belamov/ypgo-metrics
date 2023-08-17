@@ -1,11 +1,13 @@
 package services
 
 import (
-	"fmt"
+	"encoding/json"
+	"io"
 	"net/http"
 	"testing"
 
-	"github.com/belamov/ypgo-metrics/internal/app/models"
+	"github.com/belamov/ypgo-metrics/internal/app/resources"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,16 +28,29 @@ func TestHTTPReporter_Report(t *testing.T) {
 
 	reporter := NewHTTPReporter(client, updateURL)
 
-	metrics := []models.MetricForReport{{
-		Type:  "type",
-		Name:  "name",
-		Value: "value",
+	value := new(float64)
+	*value = 10
+
+	metrics := []resources.Metric{{
+		ID:    "name",
+		MType: "type",
+		Delta: nil,
+		Value: value,
 	}}
 
 	reporter.Report(metrics)
 
 	assert.Equal(t,
-		fmt.Sprintf("%s/%s/%s/%s", updateURL, metrics[0].Type, metrics[0].Name, metrics[0].Value),
+		updateURL,
 		tr.req.URL.String(),
 	)
+
+	expectedReq, err := json.Marshal(metrics[0])
+	assert.NoError(t, err)
+	reqBody, err := io.ReadAll(tr.req.Body)
+	assert.NoError(t, err)
+	err = tr.req.Body.Close()
+	assert.NoError(t, err)
+
+	assert.JSONEq(t, string(expectedReq), string(reqBody))
 }
