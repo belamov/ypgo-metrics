@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 
 	"github.com/belamov/ypgo-metrics/internal/app/resources"
@@ -147,8 +147,49 @@ func (s *HandlersTestSuite) TestGetUnknownTypeMetricJSON() {
 	s.mockService.EXPECT().GetGaugeMetric(gomock.Any(), metricName).Times(1).Return(float64(0), services.ErrMetricNotFound)
 
 	result, _ := s.testRequest(
-		http.MethodGet,
-		fmt.Sprintf("/value/unkown/%s", metricName),
+		http.MethodPost,
+		"/value/",
+		string(body),
+		nil,
+	)
+	_ = result.Body.Close()
+
+	assert.Equal(s.T(), http.StatusBadRequest, result.StatusCode)
+}
+
+func (s *HandlersTestSuite) TestGetMetricUnexpectedErrorJSON() {
+	metricName := "metricName"
+
+	req := resources.Metric{
+		ID:    metricName,
+		MType: "gauge",
+		Delta: nil,
+		Value: nil,
+	}
+	body, err := json.Marshal(req)
+	require.NoError(s.T(), err)
+
+	s.mockService.EXPECT().GetGaugeMetric(gomock.Any(), metricName).Times(1).Return(float64(0), errors.New("unexpected"))
+
+	result, response := s.testRequest(
+		http.MethodPost,
+		"/value/",
+		string(body),
+		nil,
+	)
+	_ = result.Body.Close()
+
+	assert.Equal(s.T(), http.StatusInternalServerError, result.StatusCode)
+	assert.Contains(s.T(), response, "unexpected")
+}
+
+func (s *HandlersTestSuite) TestGetMetricInvalidJSON() {
+	body, err := json.Marshal(`{"name":"metric", "type":"counter"}`)
+	require.NoError(s.T(), err)
+
+	result, _ := s.testRequest(
+		http.MethodPost,
+		"/value/",
 		string(body),
 		nil,
 	)

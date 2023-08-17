@@ -15,7 +15,7 @@ func (h *Handler) GetMetricJSON(w http.ResponseWriter, r *http.Request) {
 	dec := json.NewDecoder(r.Body)
 	if err := dec.Decode(&req); err != nil {
 		log.Err(err).Msg("cannot decode request JSON body")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
