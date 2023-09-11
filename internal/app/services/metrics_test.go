@@ -144,3 +144,30 @@ func TestMetricService_GetCounterMetric(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, metricValue, val)
 }
+
+func TestMetricService_GetAllMetrics(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	mockStorage := mocks.NewMockRepository(ctrl)
+	service := NewMetricService(mockStorage)
+
+	ctx := context.Background()
+
+	gaugeMetric := models.GaugeMetric{
+		Name:  "gauge",
+		Value: 1,
+	}
+	mockStorage.EXPECT().GetAllGaugeMetrics(ctx).Times(1).Return([]models.GaugeMetric{gaugeMetric}, nil)
+
+	counterMetric := models.CounterMetric{
+		Name:  "counter",
+		Value: 1,
+	}
+	mockStorage.EXPECT().GetAllCounterMetrics(ctx).Times(1).Return([]models.CounterMetric{counterMetric}, nil)
+
+	counterMetrics, gaugeMetrics, err := service.GetAllMetrics(ctx)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(counterMetrics))
+	assert.Equal(t, counterMetric, counterMetrics[0])
+	assert.Equal(t, 1, len(gaugeMetrics))
+	assert.Equal(t, gaugeMetric, gaugeMetrics[0])
+}
