@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -10,6 +11,19 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+type NilCompressor struct{}
+
+func (n NilCompressor) GetCompressedReader(data []byte) (io.Reader, error) {
+	return bytes.NewReader(data), nil
+}
+
+func (n NilCompressor) SetHeader(req *http.Request) {
+}
+
+func NewNilCompressor() *NilCompressor {
+	return &NilCompressor{}
+}
 
 type recordingTransport struct {
 	req *http.Request
@@ -26,7 +40,7 @@ func TestHTTPReporter_Report(t *testing.T) {
 	client := &http.Client{Transport: &tr}
 	updateURL := "update_url"
 
-	reporter := NewHTTPReporter(client, updateURL)
+	reporter := NewHTTPReporter(client, updateURL, NewNilCompressor())
 
 	value := new(float64)
 	*value = 10

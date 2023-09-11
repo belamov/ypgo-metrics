@@ -14,6 +14,7 @@ type MetricServiceInterface interface {
 	GetCounterMetric(ctx context.Context, name string) (int64, error)
 	UpdateGaugeMetric(ctx context.Context, name string, value float64) error
 	GetGaugeMetric(ctx context.Context, name string) (float64, error)
+	GetAllMetrics(ctx context.Context) ([]models.CounterMetric, []models.GaugeMetric, error)
 }
 
 type MetricService struct {
@@ -71,4 +72,18 @@ func (service *MetricService) UpdateGaugeMetric(ctx context.Context, name string
 		Value: value,
 	}
 	return service.repo.UpdateGaugeMetric(ctx, metric)
+}
+
+func (service *MetricService) GetAllMetrics(ctx context.Context) ([]models.CounterMetric, []models.GaugeMetric, error) {
+	counterMetrics, err := service.repo.GetAllCounterMetrics(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error getting counter metrics from repo: %w", err)
+	}
+
+	gaugeMetrics, err := service.repo.GetAllGaugeMetrics(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error getting gauge metrics from repo: %w", err)
+	}
+
+	return counterMetrics, gaugeMetrics, nil
 }

@@ -20,13 +20,14 @@ type HandlersTestSuite struct {
 	mockCtrl    *gomock.Controller
 	mockService *mocks.MockMetricServiceInterface
 	ts          *httptest.Server
+	r           http.Handler
 }
 
 func (s *HandlersTestSuite) SetupSuite() {
 	s.mockCtrl = gomock.NewController(Reporter{s.T()})
 	s.mockService = mocks.NewMockMetricServiceInterface(s.mockCtrl)
-	r := NewRouter(s.mockService)
-	s.ts = httptest.NewServer(r)
+	s.r = NewRouter(s.mockService)
+	s.ts = httptest.NewServer(s.r)
 }
 
 func (s *HandlersTestSuite) SetupTest() {

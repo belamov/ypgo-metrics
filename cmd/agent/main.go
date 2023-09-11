@@ -23,9 +23,11 @@ func main() {
 	httpClient := &http.Client{
 		Timeout: config.ReportInterval / 2,
 	}
+
 	reporter := services.NewHTTPReporter(
 		httpClient,
 		fmt.Sprintf("http://%s/update/", config.ServerAddress),
+		services.NewGzipCompressor(),
 	)
 
 	a := agent.NewAgent(

@@ -39,6 +39,8 @@ func (h *Handler) getCounterMetric(ctx context.Context, w http.ResponseWriter, r
 		return
 	}
 
+	w.Header().Set("Content-Type", "text/html")
+
 	_, err = w.Write([]byte(strconv.FormatInt(metricValue, 10)))
 	if err != nil {
 		log.Error().Err(err).Msg("error writing counter value")
@@ -60,6 +62,8 @@ func (h *Handler) getGaugeMetric(ctx context.Context, w http.ResponseWriter, r *
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "text/html")
 
 	_, err = w.Write([]byte(strconv.FormatFloat(metricValue, 'f', -1, 64)))
 	if err != nil {

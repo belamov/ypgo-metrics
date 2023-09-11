@@ -1,0 +1,29 @@
+<html lang="ru">
+<body>
+<table>
+    <tr>
+        <th>Метрика</th>
+        <th>Тип</th>
+        <th>Значение</th>
+    </tr>
+    {{range .CounterMetrics}}
+        <tr>
+            <td>
+                {{.Name}}
+            </td>
+            <td>Counter</td>
+            <td>{{.Value}}</td>
+        </tr>
+    {{end}}
+    {{range .GaugeMetrics}}
+        <tr>
+            <td>
+                {{.Name}}
+            </td>
+            <td>Gauge</td>
+            <td>{{.Value}}</td>
+        </tr>
+    {{end}}
+</table>
+</body>
+</html>

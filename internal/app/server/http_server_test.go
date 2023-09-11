@@ -67,7 +67,7 @@ func waitForHTTPServerStart(port int) {
 	defer client.CloseIdleConnections()
 	for i := 0; i < 100; i++ {
 		time.Sleep(time.Millisecond * 100)
-		if resp, err := client.Get(fmt.Sprintf("http://localhost:%d", port)); err == nil {
+		if resp, err := client.Get(fmt.Sprintf("http://localhost:%d/ping", port)); err == nil {
 			_ = resp.Body.Close()
 			return
 		}

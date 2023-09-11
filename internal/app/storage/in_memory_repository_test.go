@@ -83,6 +83,19 @@ func TestInMemoryRepository_GetGaugeMetric(t *testing.T) {
 	assert.Equal(t, metricName, metric.Name)
 }
 
+func TestInMemoryRepository_GetAllGaugeMetrics(t *testing.T) {
+	repo := NewInMemoryRepository()
+
+	metricName := "metricName"
+	metricValue := float64(1)
+	repo.gaugeMetrics[metricName] = metricValue
+	metrics, err := repo.GetAllGaugeMetrics(context.Background())
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(metrics))
+	assert.Equal(t, metricValue, metrics[0].Value)
+	assert.Equal(t, metricName, metrics[0].Name)
+}
+
 func TestInMemoryRepository_GetUnexistingCounterMetric(t *testing.T) {
 	repo := NewInMemoryRepository()
 

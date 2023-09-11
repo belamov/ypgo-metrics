@@ -8,6 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	models "github.com/belamov/ypgo-metrics/internal/app/models"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -32,6 +33,22 @@ func NewMockMetricServiceInterface(ctrl *gomock.Controller) *MockMetricServiceIn
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockMetricServiceInterface) EXPECT() *MockMetricServiceInterfaceMockRecorder {
 	return m.recorder
+}
+
+// GetAllMetrics mocks base method.
+func (m *MockMetricServiceInterface) GetAllMetrics(arg0 context.Context) ([]models.CounterMetric, []models.GaugeMetric, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllMetrics", arg0)
+	ret0, _ := ret[0].([]models.CounterMetric)
+	ret1, _ := ret[1].([]models.GaugeMetric)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetAllMetrics indicates an expected call of GetAllMetrics.
+func (mr *MockMetricServiceInterfaceMockRecorder) GetAllMetrics(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllMetrics", reflect.TypeOf((*MockMetricServiceInterface)(nil).GetAllMetrics), arg0)
 }
 
 // GetCounterMetric mocks base method.

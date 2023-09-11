@@ -14,6 +14,30 @@ type InMemoryRepository struct {
 	counterMutex   sync.RWMutex
 }
 
+func (repo *InMemoryRepository) GetAllGaugeMetrics(ctx context.Context) ([]models.GaugeMetric, error) {
+	gaugeMetrics := make([]models.GaugeMetric, 0, len(repo.gaugeMetrics))
+	for name, value := range repo.gaugeMetrics {
+		gaugeMetrics = append(gaugeMetrics, models.GaugeMetric{
+			Name:  name,
+			Value: value,
+		})
+	}
+
+	return gaugeMetrics, nil
+}
+
+func (repo *InMemoryRepository) GetAllCounterMetrics(ctx context.Context) ([]models.CounterMetric, error) {
+	counterMetrics := make([]models.CounterMetric, 0, len(repo.counterMetrics))
+	for name, value := range repo.counterMetrics {
+		counterMetrics = append(counterMetrics, models.CounterMetric{
+			Name:  name,
+			Value: value,
+		})
+	}
+
+	return counterMetrics, nil
+}
+
 func NewInMemoryRepository() *InMemoryRepository {
 	return &InMemoryRepository{
 		gaugeMetrics:   make(map[string]float64),

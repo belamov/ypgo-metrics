@@ -35,6 +35,36 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
+// GetAllCounterMetrics mocks base method.
+func (m *MockRepository) GetAllCounterMetrics(arg0 context.Context) ([]models.CounterMetric, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllCounterMetrics", arg0)
+	ret0, _ := ret[0].([]models.CounterMetric)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllCounterMetrics indicates an expected call of GetAllCounterMetrics.
+func (mr *MockRepositoryMockRecorder) GetAllCounterMetrics(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllCounterMetrics", reflect.TypeOf((*MockRepository)(nil).GetAllCounterMetrics), arg0)
+}
+
+// GetAllGaugeMetrics mocks base method.
+func (m *MockRepository) GetAllGaugeMetrics(arg0 context.Context) ([]models.GaugeMetric, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllGaugeMetrics", arg0)
+	ret0, _ := ret[0].([]models.GaugeMetric)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllGaugeMetrics indicates an expected call of GetAllGaugeMetrics.
+func (mr *MockRepositoryMockRecorder) GetAllGaugeMetrics(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllGaugeMetrics", reflect.TypeOf((*MockRepository)(nil).GetAllGaugeMetrics), arg0)
+}
+
 // GetCounterMetricByName mocks base method.
 func (m *MockRepository) GetCounterMetricByName(arg0 context.Context, arg1 string) (*models.CounterMetric, error) {
 	m.ctrl.T.Helper()

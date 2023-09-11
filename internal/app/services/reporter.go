@@ -16,14 +16,16 @@ type ReporterInterface interface {
 }
 
 type HTTPReporter struct {
-	client    *http.Client
-	updateURL string
+	compressor Compressor
+	client     *http.Client
+	updateURL  string
 }
 
-func NewHTTPReporter(client *http.Client, updateURL string) *HTTPReporter {
+func NewHTTPReporter(client *http.Client, updateURL string, compressor Compressor) *HTTPReporter {
 	return &HTTPReporter{
-		client:    client,
-		updateURL: updateURL,
+		client:     client,
+		updateURL:  updateURL,
+		compressor: compressor,
 	}
 }
 
@@ -35,6 +37,21 @@ func (r *HTTPReporter) Report(metrics []resources.Metric) {
 			log.Error().Err(err).Msg("error marshalling metric for report")
 			continue
 		}
+
+		compressedData, err := r.compressor.GetCompressedReader(body)
+		if err != nil {
+			log.Error().Err(err).Msg("error initializing compressed reader")
+			continue
+		}
+
+		req, err := http.NewRequest(http.MethodPost, r.updateURL, compressedData)
+		if err != nil {
+			log.Error().Err(err).Msg("error initializing request for report")
+			continue
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		r.compressor.SetHeader(req)
 		response, err := r.client.Post(
 			r.updateURL,
 			"application/json",
